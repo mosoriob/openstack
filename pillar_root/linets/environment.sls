@@ -8,7 +8,7 @@ message_queue_engine: "rabbitmq"
 
 reset: "hard"
 
-debug_mode: False
+debug_mode: True
 
 system_upgrade: True
 
@@ -18,9 +18,9 @@ hosts:
 controller: "controller1"
 network: "controller1"
 storage:
-  - "controller1"
+  - "node1"
 compute:
-  - "controller1"
+  - "node1"
 
 cinder:
   volumes_group_name: "cinder-volumes"
