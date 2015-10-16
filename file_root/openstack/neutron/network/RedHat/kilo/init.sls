@@ -37,6 +37,8 @@ neutron_network_conf:
     - sections: 
         DEFAULT: 
           auth_strategy: keystone
+          router_distributed:True
+          dvr_base_mac: fa:16:3f:00:00:00
           core_plugin: ml2
           service_plugins: router
           allow_overlapping_ips: True
@@ -60,41 +62,28 @@ neutron_network_ml2_conf:
     - name: "{{ neutron['conf']['ml2'] }}"
     - sections:
         ml2:
-          type_drivers: "{{ ','.join(neutron['ml2_type_drivers']) }}"
-          tenant_network_types: "{{ ','.join(neutron['tenant_network_types']) }}"
-          mechanism_drivers: openvswitch
-{% if 'flat' in neutron['ml2_type_drivers'] %}
+          type_drivers: "flat,vlan,gre,vxlan"
+          tenant_network_types: "vxlan"
+          mechanism_drivers: "openvswitch,l2population"
         ml2_type_flat:
-          flat_networks: "{{ ','.join(neutron['flat_networks']) }}"
-{% endif %}
-{% if 'vlan' in neutron['ml2_type_drivers'] %}
+          flat_networks: "*"
         ml2_type_vlan:
-          network_vlan_ranges: "{{ ','.join(neutron['vlan_networks']) }}"
-{% endif %}
-{% if 'gre' in neutron['ml2_type_drivers'] %}
         ml2_type_gre:
-          tunnel_id_ranges: "{{ ','.join(neutron['gre_tunnel_id_ranges']) }}"
-{% endif %}
-{% if 'vxlan' in neutron['ml2_type_drivers'] %}
         ml2_type_vxlan:
-          vxlan_group: "{{ neutron['vxlan_group'] }}"
-          vni_ranges: "{{ ','.join(neutron['vxlan_tunnels_vni_ranges']) }}"
-{% endif %}
+          vni_ranges: "1001:2000"
+          vxlan_group: "239.1.1.2"
         securitygroup:
           enable_security_group: True
           enable_ipset: True
           firewall_driver: "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
         ovs:
-          integration_bridge: {{ neutron['integration_bridge'] }}
           local_ip: {{ salt['openstack_utils.minion_ip'](grains['id']) }}
-{% if neutron['bridge_mappings'] %}
-          bridge_mappings: "{{ ','.join(neutron['bridge_mappings']) }}"
-{% endif %}
-{% if salt['openstack_utils.boolean_value'](neutron['tunneling']['enable']) %} 
-          tunnel_bridge: "{{ neutron['tunneling']['bridge'] }}"
+          bridge_mappings: "physnet1:br-ex"
         agent:
-          tunnel_types: "{{ ','.join(neutron['tunneling']['types']) }}"
-{% endif %}
+          l2_population: "True"
+          tunnel_types: "gre,vxlan"
+          enable_distributed_routing: "True"
+          arp_responder: "True"
     - require:
 {% for pkg in neutron['packages']['network'] %}
       - pkg: neutron_network_{{ pkg }}_install
@@ -114,13 +103,19 @@ neutron_network_l3_agent_conf:
     - name: "{{ neutron['conf']['l3_agent'] }}"
     - sections: 
         DEFAULT: 
-          interface_driver: neutron.agent.linux.interface.OVSInterfaceDriver
-          # external_network_bridge: {{ neutron['external_bridge'] }}
-          external_network_bridge: ""
-          gateway_external_network_id: ""
-          router_delete_namespaces: True
-          debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
-          verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          debug: "False"
+          interface_driver: "neutron.agent.linux.interface.OVSInterfaceDriver"
+          use_namespaces: "True"
+          handle_internal_only_routers: "True"
+          external_network_bridge:
+          metadata_port: "9697"
+          send_arp_for_ha: "3"
+          periodic_interval: "40"
+          periodic_fuzzy_delay: "5"
+          enable_metadata_proxy: "True"
+          router_delete_namespaces: "True"
+          agent_mode: "dvr_snat"
+          allow_automatic_l3agent_failover: "False"
     - require:
 {% for pkg in neutron['packages']['network'] %}
       - pkg: neutron_network_{{ pkg }}_install
@@ -162,14 +157,17 @@ neutron_network_metadata_agent_conf:
           auth_uri: "http://{{ openstack_parameters['controller_ip'] }}:5000"
           auth_url: "http://{{ openstack_parameters['controller_ip'] }}:35357"
           auth_region: RegionOne
-          auth_plugin: "password"
-          project_domain_id: "default"
-          user_domain_id: "default"
-          project_name: "service"
-          username: "neutron"
-          password: "{{ service_users['neutron']['password'] }}"
+          auth_insecure: False
+          auth_plugin: password
+          admin_tenant_name: services
+          admin_user: neutron
+          admin_password:  "{{ service_users['neutron']['password'] }}"
           nova_metadata_ip: {{ openstack_parameters['controller_ip'] }}
           metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
+          nova_metadata_protocol: http
+          metadata_workers: 32
+          metadata_backlog:  4096
+          cache_url: memory://?default_ttl=5
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
     - require:
