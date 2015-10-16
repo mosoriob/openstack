@@ -1,7 +1,7 @@
 openstack: 
-  "<minion_id_1>,<minion_id_2>":
+  "controller1":
     - match: list
     - {{ grains['os'] }}
-    - <openstack_environment_name>.credentials
-    - <openstack_environment_name>.environment
-    - <openstack_environment_name>.networking
+    - linets.credentials
+    - linets.environment
+    - linets.networking

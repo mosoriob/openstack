@@ -91,7 +91,7 @@ API_RESULT_PAGE_SIZE = 20
 SWIFT_FILE_TRANSFER_CHUNK_SIZE = 512 * 1024
 DROPDOWN_MAX_ITEMS = 30
 TIME_ZONE = "UTC"
-{% if grains['os'] == 'CentOS' %}
+{% if grains['os'] == 'RedHat' %}
 POLICY_FILES_PATH = '/etc/openstack-dashboard'
 {% endif %}
 LOGGING = {

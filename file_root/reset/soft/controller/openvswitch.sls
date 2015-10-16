@@ -63,7 +63,7 @@ openvswitch_bridges_cleanup_delete:
 # Delete virtual cables' network scripts from previous OpenStack deployment
 
 {% if single_nic_enable %}
-  {% if grains['os'] == 'CentOS' %}
+  {% if grains['os'] == 'RedHat' %}
 centos_veths_network_scripts_delete:
   cmd.run:
     - name: |

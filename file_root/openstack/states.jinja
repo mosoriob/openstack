@@ -16,40 +16,40 @@
 {% endif %}
 
 {% set controller_states = controller_states + [
-        "ntp",
-        "system",
-        "database",
-        "message_queue",
-        "openstack.keystone",
-        "openstack.glance",
-        "openstack.nova.controller",
-        "openstack.neutron.controller",
-        "openstack.cinder.controller",
-        "openstack.heat",
-        "openstack.horizon"
+#        "ntp",
+#        "system",
+#        "database",
+#        "message_queue",
+#        "openstack.keystone",
+#        "openstack.glance",
+#        "openstack.nova.controller",
+#        "openstack.neutron.controller",
+#        "openstack.cinder.controller",
+#        "openstack.heat",
+#        "openstack.horizon"
     ]
 %}
 
 {% set network_states = network_states + [
-        "openstack.neutron.network"
+#        "openstack.neutron.network"
     ]
 %}
 
 {% set compute_states = compute_states + [
-        "openstack.neutron.compute",
-        "openstack.neutron.network",
-        "openstack.nova.compute"
+#        "openstack.neutron.compute",
+#        "openstack.neutron.network",
+#        "openstack.nova.compute"
     ]
 %}
 
 {% set storage_states = storage_states + [
-        "openstack.cinder.storage"
+#        "openstack.cinder.storage"
     ]
 %}
 
 
 {% set minion_states = [
-        "system",
+#        "system",
         "ntp"
     ]
 %}

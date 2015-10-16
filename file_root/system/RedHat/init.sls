@@ -45,29 +45,11 @@ system_iptables_running:
       - service: system_firewalld_dead
 
 include:
-  - system.CentOS.iptables
+  - system.RedHat.iptables
   
-
-{% set rpm_http_args = salt['openstack_utils.rpm_http_proxy_args']() %}
-{% for repo in yum_repository['repositories'] %}
-system_repository_{{ repo }}_repo_install:
-  cmd.run:
-    - name: rpm {{ rpm_http_args }} -ivh {{ yum_repository['repositories'][repo]['url'] }}
-    - unless: rpm -qi {{ yum_repository['repositories'][repo]['name'] }}
-    - require:
-  {% for pkg in system['packages'] %}
-      - pkg: system_{{ pkg }}_install
-  {% endfor %}
-{% endfor %}
-
-
 {% for pkg in yum_repository['packages'] %}
 system_repository_{{ pkg }}_install:
   pkg.installed:
     - name: {{ pkg }}
-    - require:
-  {% for repo in yum_repository['repositories'] %}
-      - cmd: system_repository_{{ repo }}_repo_install
-  {% endfor %}
 {% endfor %}
 
