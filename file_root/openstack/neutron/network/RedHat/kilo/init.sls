@@ -19,16 +19,13 @@ neutron_network_ipv4_forwarding_enable:
     - require:
       - ini: neutron_network_ipv4_forwarding_conf
 
-
-
 neutron_network_conf:
   ini.options_present:
     - name: "{{ neutron['conf']['neutron'] }}"
     - sections: 
         DEFAULT: 
           auth_strategy: keystone
-          router_distributed:True
-          dvr_base_mac: "fa:16:3f:00:00:00"
+          router_distributed: True
           core_plugin: ml2
           service_plugins: router
           allow_overlapping_ips: True
@@ -54,8 +51,6 @@ neutron_network_ml2_conf:
           mechanism_drivers: "openvswitch,l2population"
         ml2_type_flat:
           flat_networks: "*"
-        ml2_type_vlan:
-        ml2_type_gre:
         ml2_type_vxlan:
           vni_ranges: "1001:2000"
           vxlan_group: "239.1.1.2"
@@ -79,26 +74,6 @@ neutron_network_ml2_symlink:
     - target: {{ neutron['conf']['ml2'] }}
     - require:
       - ini: neutron_network_ml2_conf
-
-
-neutron_network_l3_agent_conf:
-  ini.options_present:
-    - name: "{{ neutron['conf']['l3_agent'] }}"
-    - sections: 
-        DEFAULT: 
-          debug: "False"
-          interface_driver: "neutron.agent.linux.interface.OVSInterfaceDriver"
-          use_namespaces: "True"
-          handle_internal_only_routers: "True"
-          external_network_bridge:
-          metadata_port: "9697"
-          send_arp_for_ha: "3"
-          periodic_interval: "40"
-          periodic_fuzzy_delay: "5"
-          enable_metadata_proxy: "True"
-          router_delete_namespaces: "True"
-          agent_mode: "dvr_snat"
-          allow_automatic_l3agent_failover: "False"
 
 neutron_network_dhcp_agent_conf:
   ini.options_present:
@@ -128,22 +103,21 @@ neutron_network_metadata_agent_conf:
     - name: "{{ neutron['conf']['metadata_agent'] }}"
     - sections: 
         DEFAULT: 
-          auth_uri: "http://{{ openstack_parameters['controller_ip'] }}:5000"
-          auth_url: "http://{{ openstack_parameters['controller_ip'] }}:35357"
+          auth_uri: "http://{{ openstack_parameters['controller_ip'] }}:5000/v2.0"
           auth_region: RegionOne
           auth_insecure: False
           auth_plugin: password
           admin_tenant_name: services
           admin_user: neutron
-          admin_password:  "{{ service_users['neutron']['password'] }}"
+          admin_password: 808e36e154bd4cee
           #admin_password:  "{{ service_users['neutron']['password'] }}"
           nova_metadata_ip: {{ openstack_parameters['controller_ip'] }}
-          metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
+          metadata_proxy_shared_secret: a965cd23ed2f4502
           #metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
           nova_metadata_protocol: http
           metadata_workers: 32
           metadata_backlog:  4096
-          cache_url: memory://?default_ttl=5R
+          cache_url: memory://?default_ttl=5
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
 
@@ -159,6 +133,26 @@ neutron_network_ovs_fix_sed:
     - require:
       - file: neutron_network_ovs_fix_cp
 
+
+{% for name in neutron['conf'] %}
+neutron_network_{{name}}_edit:
+  file.replace:
+    - name: {{ neutron['conf'][name] }}
+    - pattern: '(?m)^\#.*\n?'
+    - repl: ''
+    - bufsize: file
+    - flags:
+      - MULTILINE
+
+neutron_network_{{name}}_delete:
+  file.replace:
+    - name: {{ neutron['conf'][name] }}
+    - pattern: '^\n'
+    - repl: ''
+    - bufsize: file
+    - flags:
+      - MULTILINE
+{% endfor %}
 
 neutron_network_openvswitch_running:
   service.running:
