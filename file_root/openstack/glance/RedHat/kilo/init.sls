@@ -18,6 +18,24 @@ glance_api_conf:
   ini.options_present:
     - name: "{{ glance['conf']['api'] }}"
     - sections: 
+        DEFAULT:
+          notification_driver: noop
+          debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          bind_host: 0.0.0.0
+          bind_port: 9292
+          log_file: /var/log/glance/api.log
+          backlog: 4096
+          workers: 32
+          show_image_direct_url: False
+          use_syslog: False
+          registry_host: 0.0.0.0
+          registry_port: 9191
+          registry_client_protocol: http
+          notification_driver :  messaging
+          amqp_durable_queues: False
+          log_dir: /var/log/glance
+          default_store: rbd
         database: 
           connection: "mysql://{{ glance['database']['username'] }}:{{ glance['database']['password'] }}@{{ openstack_parameters['controller_ip'] }}/{{ glance['database']['db_name'] }}"
         keystone_authtoken: 
@@ -32,12 +50,24 @@ glance_api_conf:
         paste_deploy: 
           flavor: keystone
         glance_store:
-          default_store: file
-          filesystem_store_datadir: {{ glance['files']['images_dir'] }}
-        DEFAULT:
-          notification_driver: noop
-          debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
-          verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          os_region_name:RegionOne
+          default_store:rbd
+          stores : rbd
+          rbd_store_pool : images
+          rbd_store_user : glance
+          rbd_store_ceph_conf : /etc/ceph/ceph.conf
+          rbd_store_chunk_size : 8
+        oslo_messaging_rabbit:
+          rabbit_userid:guest
+          rabbit_use_ssl:False
+          rabbit_port:5672
+          rabbit_ha_queues:False
+          rabbit_virtual_host:/
+          rabbit_notification_exchange:glance
+          rabbit_password:guest
+          rabbit_hosts:"{{ openstack_parameters['controller_ip'] }}:5672"
+          rabbit_notification_topic:notifications
+          rabbit_host:"{{ openstack_parameters['controller_ip'] }}"
     - require:
       - ini: glance_api_conf_keystone_authtoken
 
