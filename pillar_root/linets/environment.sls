@@ -50,21 +50,62 @@ glance:
 ceph_osd:
   - "node1"
   - "controller1"
+  - "node2"
 
 ceph_mon:
   - "controller1"
   - "node1"
-
-node1:
+  - "node2"
+controller1:
   devs:
+    sdb:
+      journal: nvme0n1
     sdc:
       journal: nvme0n1
     sdd:
+      journal: nvme0n1
+    sde:
+      journal: nvme0n1
+    sdf:
+      journal: nvme0n1
+    sdg:
+      journal: nvme0n1
+    sdh:
+      journal: nvme0n1
+    sdi:
+      journal: nvme0n1
+
+
+node1:
+  devs:
+    sdb:
+      journal: nvme0n1
+    sdc:
+      journal: nvme0n1
+    sdd:
+      journal: nvme0n1
+    sde:
+      journal: nvme0n1
+    sdf:
+      journal: nvme0n1
+    sdg:
+      journal: nvme0n1
+    sdh:
       journal: nvme0n1
 
 node2:
   devs:
+    sdb:
+      journal: nvme0n1
     sdc:
       journal: nvme0n1
     sdd:
+      journal: nvme0n1
+    sde:
+      journal: nvme0n1
+    sdf:
+      journal: nvme0n1
+    sdg:
+      journal: nvme0n1
+    sdh:
       journal: nvme0n1
