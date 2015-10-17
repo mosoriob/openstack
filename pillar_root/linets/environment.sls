@@ -7,18 +7,18 @@ db_engine: "mysql"
 message_queue_engine: "rabbitmq"
 
 reset: "hard"
-
 debug_mode: True
 
 system_upgrade: True
 
 hosts:
   "controller1": "172.16.1.1"
+  "node1": "172.16.1.2"
 
 controller: "controller1"
 network: "controller1"
 storage:
-  - "node1"
+  - "node2"
 compute:
   - "node1"
 
