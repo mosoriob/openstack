@@ -162,10 +162,16 @@ def openstack_users(tenant_name=None):
 def openstack_parameters():
     controller_minion_id = __salt__['pillar.get']('controller')
     parameters = {
+        'controller_public_ip': __salt__['pillar.get']('controller_public_ip'),
         'debug_mode': __salt__['pillar.get']('debug_mode', default=False),
         'controller_ip': minion_ip(controller_minion_id),
         'reset': __salt__['pillar.get']('reset'),
+        'mysql_ip': __salt__['pillar.get']('mysql_ip'),
+        'rabbit_ip': __salt__['pillar.get']('rabbit_ip'),
+        'private_url': __salt__['pillar.get']('private_url'),
+        'public_url': __salt__['pillar.get']('public_url'),
         'message_queue': __salt__['pillar.get']('message_queue_engine'),
+        'secret_uuid': __salt__['pillar.get']('secret_uuid'),
         'series': openstack_series(),
         'system_upgrade': __salt__['pillar.get']('system_upgrade'),
         'database': __salt__['pillar.get']('db_engine'),
