@@ -66,4 +66,5 @@ node2:
   devs:
     sdc:
       journal: nvme0n1
-
+    sdd:
+      journal: nvme0n1
