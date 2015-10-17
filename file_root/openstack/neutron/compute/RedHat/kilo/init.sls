@@ -8,8 +8,11 @@ neutron_compute_sysctl_conf:
     - name: "{{ neutron['conf']['sysctl'] }}"
     - sections: 
         DEFAULT_IMPLICIT: 
-          net.ipv4.conf.all.rp_filter: 0
+          net.ipv4.ip_forward: 1
           net.ipv4.conf.default.rp_filter: 0
+          net.ipv4.conf.all.rp_filter: 0
+          net.bridge.bridge-nf-call-iptables: 1
+          net.bridge.bridge-nf-call-ip6tables: 1
 
 
 neutron_compute_sysctl_enable:
@@ -17,18 +20,6 @@ neutron_compute_sysctl_enable:
     - name: "sysctl -p"
     - require:
       - ini: neutron_compute_sysctl_conf
-
-
-neutron_compute_conf_keystone_authtoken:
-  ini.sections_absent:
-    - name: "{{ neutron['conf']['neutron'] }}"
-    - sections:
-      - keystone_authtoken
-    - require:
-{% for pkg in neutron['packages']['compute']['kvm'] %}
-      - pkg: neutron_compute_{{ pkg }}_install
-{% endfor %}
-
 
 neutron_compute_conf:
   ini.options_present:
@@ -42,56 +33,49 @@ neutron_compute_conf:
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
         keystone_authtoken: 
-          auth_uri: "http://{{ openstack_parameters['controller_ip'] }}:5000"
-          auth_url: "http://{{ openstack_parameters['controller_ip'] }}:35357"
-          auth_plugin: "password"
-          project_domain_id: "default"
-          user_domain_id: "default"
-          project_name: "service"
-          username: "neutron"
-          password: "{{ service_users['neutron']['password'] }}"
-    - require: 
-      - ini: neutron_compute_conf_keystone_authtoken
+          auth_uri: 'http://127.0.0.1:35357/v2.0/'
+          identity_uri: 'http://127.0.0.1:5000'
+          admin_tenant_name: '%SERVICE_TENANT_NAME%'
+          admin_user: '%SERVICE_USER%'
+          admin_password: '%SERVICE_PASSWORD%'
 
+
+neutron_network_l3_agent_conf:
+  ini.options_present:
+    - name: "{{ neutron['conf']['l3_agent'] }}"
+    - sections: 
+        DEFAULT: 
+          verbose: "True"
+          interface_driver: "neutron.agent.linux.interface.OVSInterfaceDriver"
+          use_namespaces: "True"
+          external_network_bridge:
+          agent_mode: "dvr"
 
 neutron_compute_ml2_conf:
   ini.options_present:
     - name: "{{ neutron['conf']['ml2'] }}"
     - sections:
         ml2:
-          type_drivers: "{{ ','.join(neutron['ml2_type_drivers']) }}"
-          tenant_network_types: "{{ ','.join(neutron['tenant_network_types']) }}"
-          mechanism_drivers: openvswitch
-{% if 'flat' in neutron['ml2_type_drivers'] %}
+          type_drivers: "flat,vlan,gre,vxlan"
+          tenant_network_types: "vxlan"
+          mechanism_drivers: "openvswitch,l2population"
         ml2_type_flat:
-          flat_networks: "{{ ','.join(neutron['flat_networks']) }}"
-{% endif %}
-{% if 'vlan' in neutron['ml2_type_drivers'] %}
-        ml2_type_vlan:
-          network_vlan_ranges: "{{ ','.join(neutron['vlan_networks']) }}"
-{% endif %}
-{% if 'gre' in neutron['ml2_type_drivers'] %}
-        ml2_type_gre:
-          tunnel_id_ranges: "{{ ','.join(neutron['gre_tunnel_id_ranges']) }}"
-{% endif %}
-{% if 'vxlan' in neutron['ml2_type_drivers'] %}
+          flat_networks: "*"
         ml2_type_vxlan:
-          vxlan_group: "{{ neutron['vxlan_group'] }}"
-          vni_ranges: "{{ ','.join(neutron['vxlan_tunnels_vni_ranges']) }}"
-{% endif %}
+          vni_ranges: "1001:2000"
+          vxlan_group: "239.1.1.2"
         securitygroup:
           enable_security_group: True
           enable_ipset: True
           firewall_driver: "neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver"
         ovs:
-          integration_bridge: {{ neutron['integration_bridge'] }}
           local_ip: {{ salt['openstack_utils.minion_ip'](grains['id']) }}
-{% if salt['openstack_utils.boolean_value'](neutron['tunneling']['enable']) %} 
+          bridge_mappings: "physnet1:br-ex"
         agent:
-          tunnel_types: "{{ ','.join(neutron['tunneling']['types']) }}"
-{% endif %}
-    - require:
-      - ini: neutron_compute_conf
+          l2_population: "True"
+          tunnel_types: "gre,vxlan"
+          enable_distributed_routing: "True"
+          arp_responder: "True"
 
 
 neutron_compute_ml2_symlink:

@@ -201,6 +201,7 @@ resources:
             - "openstack-neutron"
             - "openstack-neutron-ml2"
             - "python-neutronclient"
+
           compute:
             kvm:
               - "openstack-neutron"
@@ -217,6 +218,8 @@ resources:
             kvm:
               ovs: "openvswitch"
               ovs_agent: "neutron-openvswitch-agent"
+              l3_agent: "neutron-l3-agent"
+              metadata_agent: "neutron-metadata-agent"
           network:
             l3_agent: "neutron-l3-agent"
             dhcp_agent: "neutron-dhcp-agent"
