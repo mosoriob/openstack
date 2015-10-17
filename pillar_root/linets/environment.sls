@@ -109,3 +109,6 @@ node2:
       journal: nvme0n1
     sdh:
       journal: nvme0n1
+
+secret_uuid: "a04a5658-64b7-4ce1-884e-b36ed52f7653"
+
