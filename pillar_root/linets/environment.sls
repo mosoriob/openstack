@@ -45,3 +45,25 @@ glance:
         container_format: bare
         is_public: True
         protected: False
+
+
+ceph_osd:
+  - "node1"
+  - "controller1"
+
+ceph_mon:
+  - "controller1"
+  - "node1"
+
+node1:
+  devs:
+    sdc:
+      journal: nvme0n1
+    sdd:
+      journal: nvme0n1
+
+node2:
+  devs:
+    sdc:
+      journal: nvme0n1
+
