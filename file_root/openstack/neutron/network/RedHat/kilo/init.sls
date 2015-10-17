@@ -12,7 +12,6 @@ neutron_network_ipv4_forwarding_conf:
           net.ipv4.ip_forward: 1
           net.ipv4.conf.default.rp_filter: 0
 
-
 neutron_network_ipv4_forwarding_enable:
   cmd.run:
     - name: "sysctl -p"
@@ -28,6 +27,7 @@ neutron_network_conf:
           router_distributed: True
           core_plugin: ml2
           service_plugins: router
+          dvr_base_mac: 'fa:16:3f:00:00:00'
           allow_overlapping_ips: True
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
@@ -38,8 +38,6 @@ neutron_network_conf:
           admin_user: neutron
           admin_password: 808e36e154bd4cee
           #admin_password: "{{ service_users['neutron']['password'] }}"
-
-
 
 neutron_network_ml2_conf:
   ini.options_present:
@@ -134,25 +132,25 @@ neutron_network_ovs_fix_sed:
       - file: neutron_network_ovs_fix_cp
 
 
-{% for name in neutron['conf'] %}
-neutron_network_{{name}}_edit:
-  file.replace:
-    - name: {{ neutron['conf'][name] }}
-    - pattern: '(?m)^\#.*\n?'
-    - repl: ''
-    - bufsize: file
-    - flags:
-      - MULTILINE
-
-neutron_network_{{name}}_delete:
-  file.replace:
-    - name: {{ neutron['conf'][name] }}
-    - pattern: '^\n'
-    - repl: ''
-    - bufsize: file
-    - flags:
-      - MULTILINE
-{% endfor %}
+# {% for name in neutron['conf'] %}
+# neutron_network_{{name}}_edit:
+#   file.replace:
+#     - name: {{ neutron['conf'][name] }}
+#     - pattern: '(?m)^\#.*\n?'
+#     - repl: ''
+#     - bufsize: file
+#     - flags:
+#       - MULTILINE
+# 
+# neutron_network_{{name}}_delete:
+#   file.replace:
+#     - name: {{ neutron['conf'][name] }}
+#     - pattern: '^\n'
+#     - repl: ''
+#     - bufsize: file
+#     - flags:
+#       - MULTILINE
+# {% endfor %}
 
 neutron_network_openvswitch_running:
   service.running:

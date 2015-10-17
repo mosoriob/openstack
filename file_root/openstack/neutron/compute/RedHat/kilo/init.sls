@@ -33,11 +33,11 @@ neutron_compute_conf:
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
         keystone_authtoken: 
-          auth_uri: http://127.0.0.1:35357/v2.0/
-          identity_uri: http://127.0.0.1:5000
-          admin_tenant_name: %SERVICE_TENANT_NAME%
-          admin_user: %SERVICE_USER%
-          admin_password: %SERVICE_PASSWORD%
+          auth_uri: 'http://127.0.0.1:35357/v2.0/'
+          identity_uri: 'http://127.0.0.1:5000'
+          admin_tenant_name: '%SERVICE_TENANT_NAME%'
+          admin_user: '%SERVICE_USER%'
+          admin_password: '%SERVICE_PASSWORD%'
 
 
 neutron_network_l3_agent_conf:
@@ -49,7 +49,7 @@ neutron_network_l3_agent_conf:
           interface_driver: "neutron.agent.linux.interface.OVSInterfaceDriver"
           use_namespaces: "True"
           external_network_bridge:
-          agent_mode: "drv"
+          agent_mode: "dvr"
 
 neutron_compute_ml2_conf:
   ini.options_present:
