@@ -86,6 +86,10 @@ glance_registry_conf:
   ini.options_present:
     - name: "{{ glance['conf']['registry'] }}"
     - sections:
+        DEFAULT:
+          notification_driver: noop
+          debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
         database:
           connection: "mysql://{{ glance['database']['username'] }}:{{ glance['database']['password'] }}@{{ openstack_parameters['controller_ip'] }}/{{ glance['database']['db_name'] }}"
         keystone_authtoken: 
@@ -99,10 +103,6 @@ glance_registry_conf:
           password: "{{ service_users['glance']['password'] }}"
         paste_deploy: 
           flavor: keystone
-        DEFAULT:
-          notification_driver: noop
-          debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
-          verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
     - require:
       - ini: glance_registry_conf_keystone_authtoken
 

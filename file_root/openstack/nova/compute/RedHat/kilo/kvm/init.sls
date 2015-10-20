@@ -20,6 +20,7 @@ nova_compute_conf:
     - name: {{ nova['conf']['nova'] }}
     - sections:
         DEFAULT:
+          rpc_backend: rabbit
           auth_strategy: keystone
           my_ip: {{ minion_ip }}
           vnc_enabled: True
@@ -53,7 +54,17 @@ nova_compute_conf:
           admin_username: neutron
           admin_password: "{{ service_users['neutron']['password'] }}"
         libvirt:
-          virt_type: {{ nova['libvirt_virt_type'] }}
+          virt_type: kvm
+          images_type: rbd
+          images_rbd_pool: vms
+          images_rbd_ceph_conf: /etc/ceph/ceph.conf
+          rbd_user: cinder
+          rbd_secret_uuid: "{{ openstack_parameters['secret_uuid'] }}"
+          disk_cachemodes: "network: writeback"
+          inject_password: false
+          inject_key: false
+          inject_partition: -2
+          live_migration_flag: "VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
     - require:
       - ini: nova_compute_conf_keystone_authtoken
 

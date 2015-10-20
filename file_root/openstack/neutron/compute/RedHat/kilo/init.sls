@@ -78,6 +78,15 @@ neutron_compute_ml2_conf:
           arp_responder: "True"
 
 
+neutron_network_metadata_agent_conf:
+  ini.options_present:
+    - name: "{{ neutron['conf']['metadata_agent'] }}"
+    - sections: 
+        DEFAULT: 
+          debug: True
+          nova_metadata_ip: {{ openstack_parameters['controller_ip'] }}
+          metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
+
 neutron_compute_ml2_symlink:
   file.symlink:
     - name: {{ neutron['conf']['ml2_symlink'] }}
