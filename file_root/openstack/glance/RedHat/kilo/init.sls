@@ -19,7 +19,6 @@ glance_api_conf:
     - name: "{{ glance['conf']['api'] }}"
     - sections: 
         DEFAULT:
-          notification_driver: noop
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           bind_host: 0.0.0.0
@@ -32,7 +31,7 @@ glance_api_conf:
           registry_host: 0.0.0.0
           registry_port: 9191
           registry_client_protocol: http
-          notification_driver :  messaging
+          notification_driver: 'messaging'
           amqp_durable_queues: False
           log_dir: /var/log/glance
           default_store: rbd
@@ -50,13 +49,13 @@ glance_api_conf:
         paste_deploy: 
           flavor: keystone
         glance_store:
-          os_region_name:RegionOne
-          default_store:rbd
-          stores : rbd
-          rbd_store_pool : images
-          rbd_store_user : glance
-          rbd_store_ceph_conf : /etc/ceph/ceph.conf
-          rbd_store_chunk_size : 8
+          os_region_name: RegionOne
+          default_store: 'rbd'
+          stores: "rbd"
+          rbd_store_pool: images
+          rbd_store_user: glance
+          rbd_store_ceph_conf: /etc/ceph/ceph.conf
+          rbd_store_chunk_size: 8
         oslo_messaging_rabbit:
           rabbit_userid:guest
           rabbit_use_ssl:False
