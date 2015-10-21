@@ -14,14 +14,14 @@ system_upgrade: True
 hosts:
   "controller1": "172.16.1.1"
   "node1": "172.16.1.2"
+  "node2": "172.16.1.3"
 
 controller: "controller1"
 network: "controller1"
-storage:
-  - "node2"
+storage: "node3"
 compute:
   - "node1"
-
+  - "node2"
 cinder:
   volumes_group_name: "cinder-volumes"
   volumes_path: "/var/lib/cinder/cinder-volumes"
