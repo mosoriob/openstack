@@ -64,8 +64,7 @@ neutron_network_ml2_conf:
           enable_distributed_routing: "True"
           arp_responder: "True"
 
-
-neutron_controller_l3_agent_conf:
+neutron_network_l3_agent_conf:
   ini.options_present:
     - name: "{{ neutron['conf']['l3_agent'] }}"
     - sections: 
