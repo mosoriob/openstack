@@ -19,6 +19,13 @@ cephx_cinder:
 {% for name in ['cinder'] -%}
 keyring_{{name}}:
   cmd.run:
+    - name: "ceph auth get-or-create client.{{name}} | tee /etc/ceph/ceph.client.cinder.keyring"
+{% endfor -%}
+
+
+{% for name in ['cinder'] -%}
+keyring_temp_{{name}}:
+  cmd.run:
     - name: "ceph auth get-key client.{{name}} | tee /root/linets_ceph/client.cinder.key"
 {% endfor -%}
 
