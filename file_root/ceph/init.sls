@@ -35,6 +35,8 @@ new_cluster:
           'rbd cache writethrough until flush': true
           'rbd concurrent management ops': 20
         osd:
+          'cluster network': 172.16.3.0/24
+          'public network': 172.16.1.0/24
           'osd max backfills': 1
           'osd recovery op priority': 1
           'osd client op priority': 63
@@ -52,35 +54,19 @@ install_osds:
     - name: ceph-deploy install --release hammer --no-adjust-repos {{ osds }}
     - cwd: /root/linets_ceph
 
-create-initial:
-  cmd.run:
-    - name: ceph-deploy  mon create-initial 
-    - cwd: /root/linets_ceph
+#create-initial:
+#  cmd.run:
+#    - name: ceph-deploy --overwrite-conf mon create-initial 
+#    - cwd: /root/linets_ceph
 
-admin:
-  cmd.run:
-    - name: ceph-deploy  admin {{ mons }}
-    - cwd: /root/linets_ceph
+#admin:
+#  cmd.run:
+#    - name: ceph-deploy --overwrite-conf admin {{ mons }}
+#    - cwd: /root/linets_ceph
 
-/etc/ceph/ceph.client.admin.keyring:
-  file.managed:
-    - user: root
-    - group: root
-    - mode: 644
-
-
-{% for host in osds_list -%}
-{% for dev in salt['pillar.get'](host + ':devs') -%}
-{% if dev -%}
-{% set journal = salt['pillar.get'](host + ':devs:' + dev + ':journal') -%}
-
-disk_{{host}}_prepare {{ dev }}:
-  cmd.run:
-    - name: ceph-deploy osd prepare --zap-disk {{ host }}:{{ dev }}:/dev/{{ journal }}
-    - unless: parted --script /dev/{{ dev }} print | grep 'ceph data'
-    - cwd: /root/linets_ceph
-
-{% endif -%}
-{% endfor -%}
-{% endfor -%}
+#/etc/ceph/ceph.client.admin.keyring:
+#  file.managed:
+#    - user: root
+#    - group: root
+#    - mode: 644
 

@@ -1,5 +1,5 @@
 openstack: 
-  "controller1,node1":
+  "controller1,node1,node2":
     - match: list
     - {{ grains['os'] }}
     - linets.credentials

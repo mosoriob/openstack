@@ -45,7 +45,6 @@ glance_api_conf:
           user_domain_id: "default"
           project_name: "service"
           username: "glance"
-          password: "{{ service_users['glance']['password'] }}"
         paste_deploy: 
           flavor: keystone
         glance_store:
@@ -57,16 +56,16 @@ glance_api_conf:
           rbd_store_ceph_conf: /etc/ceph/ceph.conf
           rbd_store_chunk_size: 8
         oslo_messaging_rabbit:
-          rabbit_userid:guest
-          rabbit_use_ssl:False
-          rabbit_port:5672
-          rabbit_ha_queues:False
-          rabbit_virtual_host:/
-          rabbit_notification_exchange:glance
-          rabbit_password:guest
-          rabbit_hosts:"{{ openstack_parameters['controller_ip'] }}:5672"
-          rabbit_notification_topic:notifications
-          rabbit_host:"{{ openstack_parameters['controller_ip'] }}"
+          rabbit_userid: guest
+          rabbit_use_ssl: False
+          rabbit_port: 5672
+          rabbit_ha_queues: False
+          rabbit_virtual_host: /
+          rabbit_notification_exchange: glance
+          rabbit_password: guest
+          rabbit_hosts: "{{ openstack_parameters['controller_ip'] }}:5672"
+          rabbit_notification_topic: notifications
+          rabbit_host: "{{ openstack_parameters['controller_ip'] }}"
     - require:
       - ini: glance_api_conf_keystone_authtoken
 

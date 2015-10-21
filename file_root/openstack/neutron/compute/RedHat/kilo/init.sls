@@ -40,7 +40,7 @@ neutron_compute_conf:
           admin_password: '%SERVICE_PASSWORD%'
 
 
-neutron_network_l3_agent_conf:
+neutron_compute_l3_agent_conf:
   ini.options_present:
     - name: "{{ neutron['conf']['l3_agent'] }}"
     - sections: 
@@ -78,7 +78,7 @@ neutron_compute_ml2_conf:
           arp_responder: "True"
 
 
-neutron_network_metadata_agent_conf:
+neutron_compute_metadata_agent_conf:
   ini.options_present:
     - name: "{{ neutron['conf']['metadata_agent'] }}"
     - sections: 
