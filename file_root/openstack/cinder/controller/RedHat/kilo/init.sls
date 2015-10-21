@@ -33,6 +33,24 @@ cinder_controller_conf:
           auth_strategy: keystone
           debug: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
           verbose: "{{ salt['openstack_utils.boolean_value'](openstack_parameters['debug_mode']) }}"
+          volume_driver: cinder.volume.drivers.rbd.RBDDriver
+          rbd_pool: volumes
+          rbd_ceph_conf: /etc/ceph/ceph.conf
+          rbd_flatten_volume_from_snapshot: false
+          rbd_max_clone_depth: 5
+          rbd_store_chunk_size: 4
+          rados_connect_timeout: -1
+          glance_api_version: 2
+          rbd_user: cinder
+          rbd_secret_uuid: "{{ openstack_parameters['secret_uuid'] }}"
+          backup_driver: cinder.backup.drivers.ceph
+          backup_ceph_conf: /etc/ceph/ceph.conf
+          backup_ceph_user: cinder-backup
+          backup_ceph_chunk_size: 134217728
+          backup_ceph_pool: backups
+          backup_ceph_stripe_unit: 0
+          backup_ceph_stripe_count: 0
+          restore_discard_excess_bytes: true
         database:
           connection: "mysql://{{ cinder['database']['username'] }}:{{ cinder['database']['password'] }}@{{ openstack_parameters['controller_ip'] }}/{{ cinder['database']['db_name'] }}"
         keystone_authtoken: 
