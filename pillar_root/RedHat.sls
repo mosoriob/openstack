@@ -134,6 +134,7 @@ resources:
             kvm:
               - "sysfsutils"
               - "openstack-nova-compute"
+              - "openstack-nova-common"
         services:
           controller:
             api: "openstack-nova-api"
