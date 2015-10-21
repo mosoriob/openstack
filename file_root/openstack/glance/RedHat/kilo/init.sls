@@ -45,6 +45,7 @@ glance_api_conf:
           user_domain_id: "default"
           project_name: "service"
           username: "glance"
+          password: "{{ service_users['glance']['password'] }}"
         paste_deploy: 
           flavor: keystone
         glance_store:
