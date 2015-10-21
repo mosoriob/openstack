@@ -11,6 +11,8 @@ debug_mode: True
 
 system_upgrade: True
 
+controller_public_ip: 192.168.181.252
+
 hosts:
   "controller1": "172.16.1.1"
   "node1": "172.16.1.2"
