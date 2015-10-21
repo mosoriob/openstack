@@ -34,10 +34,9 @@ neutron_network_conf:
         keystone_authtoken: 
           auth_uri: "http://{{ openstack_parameters['controller_ip'] }}:5000"
           identity_uri: "http://{{ openstack_parameters['controller_ip'] }}:35357"
-          admin_tenant_name: services
+          admin_tenant_name: service
           admin_user: neutron
-          admin_password: 808e36e154bd4cee
-          #admin_password: "{{ service_users['neutron']['password'] }}"
+          admin_password: "{{ service_users['neutron']['password'] }}"
 
 neutron_network_ml2_conf:
   ini.options_present:
@@ -65,6 +64,24 @@ neutron_network_ml2_conf:
           enable_distributed_routing: "True"
           arp_responder: "True"
 
+
+neutron_controller_l3_agent_conf:
+  ini.options_present:
+    - name: "{{ neutron['conf']['l3_agent'] }}"
+    - sections: 
+        DEFAULT: 
+          debug: False
+          interface_driver: neutron.agent.linux.interface.OVSInterfaceDriver
+          use_namespaces: True
+          handle_internal_only_routers: True
+          metadata_port: 9697
+          send_arp_for_ha: 3
+          periodic_interval: 40
+          periodic_fuzzy_delay: 5
+          enable_metadata_proxy: True
+          router_delete_namespaces: True
+          agent_mode: dvr_snat
+          allow_automatic_l3agent_failover: False
 
 neutron_network_ml2_symlink:
   file.symlink:
@@ -105,13 +122,11 @@ neutron_network_metadata_agent_conf:
           auth_region: RegionOne
           auth_insecure: False
           auth_plugin: password
-          admin_tenant_name: services
+          admin_tenant_name: service
           admin_user: neutron
-          admin_password: 808e36e154bd4cee
-          #admin_password:  "{{ service_users['neutron']['password'] }}"
+          admin_password:  "{{ service_users['neutron']['password'] }}"
           nova_metadata_ip: {{ openstack_parameters['controller_ip'] }}
-          metadata_proxy_shared_secret: a965cd23ed2f4502
-          #metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
+          metadata_proxy_shared_secret: {{ neutron['metadata_secret'] }}
           nova_metadata_protocol: http
           metadata_workers: 32
           metadata_backlog:  4096
