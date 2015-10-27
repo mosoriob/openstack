@@ -96,7 +96,6 @@ libvirt_conf:
         tcp_port = "16509"
         auth_tcp = "none"
 
-
 nova_compute_sqlite_delete:
   file.absent:
     - name: {{ nova['files']['sqlite'] }}

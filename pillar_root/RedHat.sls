@@ -221,6 +221,8 @@ resources:
               ovs_agent: "neutron-openvswitch-agent"
               l3_agent: "neutron-l3-agent"
               metadata_agent: "neutron-metadata-agent"
+              dhcp_agent: "neutron-dhcp-agent"
+
           network:
             l3_agent: "neutron-l3-agent"
             dhcp_agent: "neutron-dhcp-agent"
@@ -317,6 +319,8 @@ resources:
           controller:
             scheduler: "openstack-cinder-scheduler"
             api: "openstack-cinder-api"
+            cinder_volume: "openstack-cinder-volume"
+
           storage:
             target: "target"
             cinder_volume: "openstack-cinder-volume"
