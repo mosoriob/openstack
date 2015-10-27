@@ -80,6 +80,12 @@ nova_compute_{{ service }}_running:
       - ini: nova_compute_conf
 {% endfor %}
 
+libvirt_nova:
+  file.managed:
+    - name: /etc/sysconfig/libvirtd
+    - contents: 'LIBVIRTD_ARGS="--listen"'
+    - require:
+      - pkg: libvirt
 
 nova_compute_sqlite_delete:
   file.absent:
