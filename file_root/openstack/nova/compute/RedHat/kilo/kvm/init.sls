@@ -60,11 +60,13 @@ nova_compute_conf:
           images_rbd_ceph_conf: /etc/ceph/ceph.conf
           rbd_user: cinder
           rbd_secret_uuid: "{{ openstack_parameters['secret_uuid'] }}"
-          disk_cachemodes: "network: writeback"
+          disk_cachemodes: 'network=writeback'
           inject_password: false
           inject_key: false
           inject_partition: -2
           live_migration_flag: "VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE,VIR_MIGRATE_PERSIST_DEST,VIR_MIGRATE_TUNNELLED"
+          cpu_mode: custom
+          cpu_model: kvm64
     - require:
       - ini: nova_compute_conf_keystone_authtoken
 
