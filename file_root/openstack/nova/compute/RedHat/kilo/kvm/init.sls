@@ -87,6 +87,16 @@ libvirt_nova:
     - require:
       - pkg: libvirt
 
+libvirt_conf:
+  file.managed:
+    - name: /etc/libvirt/libvirt.conf
+    - contents: |
+        listen_tls = 0
+        listen_tcp = 1
+        tcp_port = "16509"
+        auth_tcp = "none"
+
+
 nova_compute_sqlite_delete:
   file.absent:
     - name: {{ nova['files']['sqlite'] }}
