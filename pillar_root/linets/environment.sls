@@ -17,13 +17,15 @@ hosts:
   "controller1": "172.16.1.1"
   "node1": "172.16.1.2"
   "node2": "172.16.1.3"
+  "node3": "172.16.1.4"
 
 controller: "controller1"
 network: "controller1"
-storage: "node3"
+storage: "node4"
 compute:
   - "node1"
   - "node2"
+  - "node3"
 cinder:
   volumes_group_name: "cinder-volumes"
   volumes_path: "/var/lib/cinder/cinder-volumes"
